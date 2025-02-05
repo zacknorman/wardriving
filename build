@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Find all shell scripts in subdirectories and execute them
+find . -type f -name "*.sh" | while read -r script; do
+    echo "Executing $script"
+    bash "$script"
+done
