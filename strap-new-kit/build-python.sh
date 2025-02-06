@@ -11,7 +11,12 @@ install_python() {
     echo "Downloading & Installing Python $LATEST_PYTHON \n ..."
     PYTHON_TAR="Python-$LATEST_PYTHON.tgz"
     PYTHON_SRC_DIR="Python-$LATEST_PYTHON"
-    wget "https://www.python.org/ftp/python/$LATEST_PYTHON/$PYTHON_TAR"
+    # Check if the tarball is already cached
+    if [ -f "$PYTHON_TAR" ]; then
+        echo "Using cached tarball $PYTHON_TAR"
+    else
+        wget "https://www.python.org/ftp/python/$LATEST_PYTHON/$PYTHON_TAR"
+    fi
     tar -xzf $PYTHON_TAR
     cd $PYTHON_SRC_DIR
     ./configure --enable-optimizations
@@ -24,10 +29,8 @@ link_python() {
     echo "Linking Python and pip binaries..."
     sudo ln -sf /usr/local/bin/python${LATEST_PYTHON%.*} /usr/local/bin/python
     sudo ln -sf /usr/local/bin/pip${LATEST_PYTHON%.*} /usr/local/bin/pip
-
     echo "Ensuring pip is installed..."
     python -m ensurepip
-
     echo "Verifying the installation..."
     python --version
     pip --version
@@ -39,4 +42,5 @@ if [[ "$1" == "--link-only" ]]; then
 else
     install_python
     link_python
+    rm -rf Python*
 fi

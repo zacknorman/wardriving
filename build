@@ -1,5 +1,35 @@
 #!/bin/bash
 
+# Function to install dependencies based on the detected OS
+install_dependencies() {
+    if [ -f /etc/os-release ]; then
+        . /etc/os-release
+        case "$ID" in
+            arch)
+                sudo pacman -Syu --noconfirm wget gcc
+                ;;
+            ubuntu|debian)
+                sudo apt-get update
+                sudo apt-get install -y wget gcc
+                ;;
+            alpine)
+                sudo apk update
+                sudo apk add wget clang
+                ;;
+            *)
+                echo "Unsupported OS: $ID"
+                exit 1
+                ;;
+        esac
+    else
+        echo "Cannot detect the operating system."
+        exit 1
+    fi
+}
+
+# Install dependencies
+install_dependencies
+
 # Find all shell scripts in subdirectories and execute them
 find . -type f -name "*.sh" | while read -r script; do
     echo "Executing $script"
